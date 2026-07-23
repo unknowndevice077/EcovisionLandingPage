@@ -1,8 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ecovisions Landing Page
 
-## Getting Started
+Professional landing page for Ecovisions, built with modern web technologies.
 
-First, run the development server:
+## 🌐 Overview
+
+A beautiful, responsive landing page showcasing Ecovisions using Next.js, TypeScript, and Tailwind CSS. The site is deployed on Vercel and live at [ecovisionlandingpage.vercel.app](https://ecovisionlandingpage.vercel.app).
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS + PostCSS
+- **Linting**: ESLint
+- **Deployment**: Vercel
+- **Package Manager**: npm
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+
+### Installation
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+# or
+bun install
+```
+
+### Development Server
 
 ```bash
 npm run dev
@@ -14,23 +45,69 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the landing page. The page hot-reloads as you edit files.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+EcovisionLandingPage/
+├── app/                      # Next.js App Router pages
+├── public/                   # Static assets and images
+├── package.json              # Dependencies and scripts
+├── tsconfig.json            # TypeScript configuration
+├── tailwind.config.ts       # Tailwind CSS configuration
+├── next.config.ts           # Next.js configuration
+└── postcss.config.mjs        # PostCSS configuration
+```
 
-## Learn More
+## 🎨 Features
 
-To learn more about Next.js, take a look at the following resources:
+- **Responsive Design** — Mobile-first approach for all screen sizes
+- **Modern UI** — Clean and professional landing page design
+- **Fast Performance** — Optimized images and code splitting
+- **SEO Friendly** — Proper meta tags and semantic HTML
+- **Accessibility** — WCAG compliant design
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚢 Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is automatically deployed on [Vercel](https://vercel.com).
 
-## Deploy on Vercel
+### Live Site
+- **URL**: [https://ecovisionlandingpage.vercel.app](https://ecovisionlandingpage.vercel.app)
+- **Status**: Live and production-ready
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Deploy Your Own
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Fork or clone this repository
+2. Visit [vercel.com](https://vercel.com)
+3. Import this GitHub repository
+4. Vercel will automatically:
+   - Detect Next.js configuration
+   - Set up environment variables (if needed)
+   - Build and deploy your site
+
+For more details, check the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-app/deploying).
+
+## 📚 Learn More
+
+- [Next.js Documentation](https://nextjs.org/docs) - Features and API reference
+- [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
+- [TypeScript](https://www.typescriptlang.org) - Static type checker
+- [Vercel Documentation](https://vercel.com/docs) - Deployment platform
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👤 Author
+
+**unknowndevice077**
+- GitHub: [@unknowndevice077](https://github.com/unknowndevice077)
+
+## 💬 Support
+
+For issues, feature requests, or questions, please [open an issue](https://github.com/unknowndevice077/EcovisionLandingPage/issues) on GitHub.
+
+---
+
+**Visit the live site**: [https://ecovisionlandingpage.vercel.app](https://ecovisionlandingpage.vercel.app) 🌍
