@@ -41,7 +41,7 @@ export default function EcoVisionLanding() {
         </svg>
       ),
       body: 'Our custom AI models scan video feeds directly on the hardware pole. The system spots threats instantly and deletes raw video clips right away to secure civic privacy.',
-      tags: ['YOLOv11 AI', 'Local Compute', 'Fast Frame Loops', 'Privacy Protection']
+      tags: ['YOLOv11 + X3D-XS AI', 'Local Compute', 'Fast Frame Loops', 'Privacy Protection']
     },
     {
       num: '02', label: '24/7 Solar Power Bank',

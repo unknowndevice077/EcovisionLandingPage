@@ -22,6 +22,8 @@
 
 # misc
 .DS_Store
+Thumbs.db
+desktop.ini
 *.pem
 
 # debug
@@ -35,7 +37,12 @@ yarn-error.log*
 
 # vercel
 .vercel
-best.pt
+
+# python backend (predict.py) — hosted separately, not deployed to Vercel
+__pycache__/
+*.pyc
+*.pt
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

@@ -178,8 +178,8 @@ export function SecurityCapabilitiesGrid() {
   const capabilities = [
     {
       title: "Assault Detection",
-      badge: "Local AI",
-      desc: "The camera instantly spots physical fights or violence, flagging dangerous activity right away to keep the public square secure.",
+      badge: "X3D-XS AI",
+      desc: "A dedicated X3D-XS video model instantly spots physical fights or violence, flagging dangerous activity right away to keep the public square secure.",
       svgBackdrop: (
         <svg viewBox="0 0 100 100" fill="none" stroke="var(--green)" strokeWidth="0.5" opacity="0.04" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
           <path d="M10 20 L30 80 M25 20 L45 80 M70 15 L30 85 M85 30 L50 90" strokeWidth="1" />

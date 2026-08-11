@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "EcoVision Smartpole — Driven by Edge AI",
   description:
-    "Solar-powered, on-pole computer vision. EcoVision detects threats locally with a custom YOLOv11 model, keeping neighborhoods safe without sending private video anywhere.",
+    "Solar-powered, on-pole computer vision. EcoVision detects threats locally with custom-trained YOLOv11 and X3D-XS models, keeping neighborhoods safe without sending private video anywhere.",
 };
 
 export default function RootLayout({
