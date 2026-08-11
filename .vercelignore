@@ -1,0 +1,6 @@
+predict.py
+*.pyc
+__pycache__/
+*.pt
+.env.local
+.env.*.local

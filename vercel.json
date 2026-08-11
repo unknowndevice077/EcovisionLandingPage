@@ -1,0 +1,10 @@
+{
+  "buildCommand": "next build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "nodeVersion": "20.x",
+  "env": {
+    "NEXT_PUBLIC_PYTHON_BACKEND_URL": "@python_backend_url"
+  },
+  "regions": ["iad1"]
+}
