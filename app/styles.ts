@@ -33,12 +33,15 @@ export const ASSETS = {
   // just never drawn. Only the same clean banner appears, and only once
   // RobberyTracker itself confirms a pair, not a per-person guess.
   ROBBERY_FEED:   "/RobberyDetection.mp4",
-  // WEAPON and VANDALISM: single-frame YOLO detectors (weapons_v2.pt,
-  // vandalism_marks_v2.pt), run directly against held-out validation/test
-  // images -- genuine data the training run never touched, per the exact
-  // per-class thresholds main.py enforces. Real boxes, real confidence.
-  WEAPON_FEED:    "/WeaponDetection.jpg",
-  VANDALISM_FEED: "/VandalismDetection.jpg",
+  // WEAPON and VANDALISM: the real deployed single-frame YOLO detectors
+  // (weapons_v2.pt, vandalism_marks_v2.pt) run frame-by-frame on real video
+  // -- not a single still -- at the exact per-class confidence thresholds
+  // main.py enforces (gun 0.52, knife 0.45, vandalism 0.50). Boxes are the
+  // literal detected object, so drawing them live has none of the
+  // per-person misattribution problem VIOLENCE/ROBBERY avoid above.
+  // Trimmed to a run the detector actually confirmed, not guessed at.
+  WEAPON_FEED:    "/WeaponDetection.mp4",
+  VANDALISM_FEED: "/VandalismDetection.mp4",
 
   // Hardware breakdown photos (BlueprintSpecs, "How the Hardware Works" section)
   TECH_IMG_CAMERA: "",  // e.g. "/camera-hardware.jpg"
