@@ -1,18 +1,22 @@
 import React from 'react';
-import { s, ASSETS } from '../styles';
-import { MediaShowcaseProps, TechnicalSpecVisualProps, MetricSpecProps, PillarItemProps, SplitConfigProps } from '../types';
+import Image from 'next/image';
+import { s, ASSETS, useInViewVideo } from '../styles';
+import { MediaShowcaseProps, TechnicalSpecVisualProps, MetricSpecProps, ModelPerformanceProps, PillarItemProps, SplitConfigProps } from '../types';
 
 export function MediaShowcase({ label, sublabel, minHeight = 380, src, type = 'video' }: MediaShowcaseProps) {
   const isPlaceholder = !src;
+  const videoRef = useInViewVideo();
   return (
     <div style={{ width: '100%', minHeight, background: 'var(--surface)', border: '1px solid var(--border)', position: 'relative', overflow: 'hidden', animation: 'edgePulse 8s ease-in-out infinite' }}>
       {!isPlaceholder ? (
         type === 'video' ? (
-          <video autoPlay muted loop playsInline preload="metadata" poster={src.replace(/\.mp4$/i, '.jpg')} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', opacity: 0.75 }}>
+          // Below-the-fold feeds only decode/play once scrolled into view (see
+          // useInViewVideo) instead of every clip autoplaying at once on load.
+          <video ref={videoRef} muted loop playsInline preload="metadata" poster={src.replace(/\.mp4$/i, '.jpg')} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', opacity: 0.75 }}>
             <source src={src} type="video/mp4"/>
           </video>
         ) : (
-          <img src={src} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', opacity: 0.8 }}/>
+          <Image src={src} alt={label} fill sizes="(max-width: 900px) 100vw, 50vw" style={{ objectFit: 'cover', opacity: 0.8 }}/>
         )
       ) : (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
@@ -34,7 +38,7 @@ export function TechnicalSpecVisual({ label, badge, src }: TechnicalSpecVisualPr
   return (
     <div style={{ position: 'relative', height: 480, border: '1px solid var(--border)', background: 'var(--surface)', overflow: 'hidden' }}>
       {!isPlaceholder ? (
-        <img src={src} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.65 }}/>
+        <Image src={src} alt={label} fill sizes="(max-width: 900px) 100vw, 45vw" style={{ objectFit: 'cover', opacity: 0.65 }}/>
       ) : (
         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
           <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(118,185,0,.02) 1px, transparent 1px), linear-gradient(90deg, rgba(118,185,0,.02) 1px, transparent 1px)', backgroundSize: '24px 24px' }}/>
@@ -109,7 +113,7 @@ export function Metrics({ latencyRef, objectsRef, powerRef, rangeRef, metricLate
         { ref: powerRef, val: metricPower, unit: 'W', label: 'Continuous Solar Energy', desc: 'High-efficiency solar panels and chargers keep the pole running completely independent of the city grid.' },
         { ref: rangeRef, val: metricRange, unit: '°', label: 'Solar Panel Adjustment', desc: 'The smart solar panel moves automatically on a single axis to follow the sun and capture maximum power.' }
       ].map((m, i) => (
-        <div key={i} ref={m.ref} className={`reveal d${i}`} style={{ ...s.metricCell, borderRight: i === 3 ? 'none' : '1px solid var(--border)' }}>
+        <div key={i} ref={m.ref} className={`reveal d${i} metric-cell`} style={{ ...s.metricCell, borderRight: i === 3 ? 'none' : '1px solid var(--border)' }}>
           <div style={s.metricLbl}>{m.label}</div>
           <div style={s.metricVal}>{m.val.toLocaleString()}<span style={s.metricUnit}>{m.unit}</span></div>
           <div style={s.metricDesc}>{m.desc}</div>
@@ -154,10 +158,10 @@ export function StreamShowcase() {
         </div>
 
         <div style={{ position: 'relative', overflow: 'hidden' }} className="reveal">
-          <MediaShowcase src={ASSETS.THEFT_FEED} label="Theft Detection Feed" sublabel="Live Camera Stream • Property and Asset Theft Monitor" minHeight={380}/>
+          <MediaShowcase src={ASSETS.ROBBERY_FEED} label="Robbery Detection Feed" sublabel="Live Camera Stream • Robbery and Asset Theft Monitor" minHeight={380}/>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px', zIndex: 20, background: 'linear-gradient(to top, var(--bg) 0%, transparent)' }}>
             <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--green)', marginBottom: 6, fontWeight: 700 }}>CAM_03 // PERIMETER SAFE</div>
-            <div style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', color: '#fff' }}>Theft &amp; Asset Protection Feed</div>
+            <div style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', color: '#fff' }}>Robbery &amp; Asset Protection Feed</div>
           </div>
         </div>
 
@@ -169,6 +173,49 @@ export function StreamShowcase() {
           </div>
         </div>
 
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   📊 MODEL PERFORMANCE — real held-out evaluation numbers, not marketing copy.
+   ───────────────────────────────────────────────────────────────────────────── */
+export function ModelPerformance({ accuracyRef, recallRef, fprRef, clipsRef, metricAccuracy, metricRecall, metricFpr, metricClips }: ModelPerformanceProps) {
+  const rows = [
+    { ref: accuracyRef, val: metricAccuracy, decimals: 1, unit: '%', label: 'Overall Accuracy', desc: 'Correct verdicts across held-out clips covering violence, weapons, robbery, and vandalism.' },
+    { ref: recallRef, val: metricRecall, decimals: 1, unit: '%', label: 'Recall On Real Incidents', desc: 'Share of genuine incidents the system actually catches — the number that matters most in the field.' },
+    { ref: fprRef, val: metricFpr, decimals: 1, unit: '%', label: 'False Positive Rate', desc: 'How often a clean, uneventful scene gets wrongly flagged — kept low so responders never learn to ignore alerts.' },
+    { ref: clipsRef, val: metricClips, decimals: 0, unit: '', label: 'Held-Out Test Clips', desc: 'Footage excluded from both training and checkpoint selection, used only to measure the numbers above.' }
+  ];
+  return (
+    <section style={{ padding: '100px 0 140px', borderTop: '1px solid var(--border)', position: 'relative', zIndex: 10 }} id="performance">
+      <div style={s.secInner}>
+        <div className="reveal" style={{ marginBottom: 56 }}>
+          <div style={{ fontFamily: 'var(--fm)', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18, fontWeight: 700 }}>
+            <span style={{ display: 'block', width: 24, height: 2, background: 'var(--green)' }}/>
+            Measured, Not Marketed
+          </div>
+          <h2 style={{ fontFamily: 'var(--fh)', fontWeight: 900, fontSize: 'clamp(40px, 5vw, 68px)', lineHeight: 0.95, textTransform: 'uppercase', letterSpacing: '-1.5px', color: '#fff', marginBottom: 20 }}>
+            Validated On Footage The Model Never Saw.
+          </h2>
+          <p style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--muted)', maxWidth: 680 }}>
+            Every figure below comes from a held-out test split the training run and checkpoint selection never touched — not from the training curve itself.
+          </p>
+        </div>
+        <div style={s.metricsBar}>
+          {rows.map((m, i) => (
+            <div key={i} ref={m.ref} className={`reveal d${i} metric-cell`} style={{ ...s.metricCell, borderRight: i === 3 ? 'none' : '1px solid var(--border)' }}>
+              <div style={s.metricLbl}>{m.label}</div>
+              <div style={s.metricVal}>
+                {m.decimals ? (m.val / 10).toFixed(m.decimals) : m.val.toLocaleString()}
+                <span style={s.metricUnit}>{m.unit}</span>
+              </div>
+              <div style={s.metricDesc}>{m.desc}</div>
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, transparent, rgba(118, 185, 0, 0.15), transparent)' }}/>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -203,7 +250,7 @@ export function SecurityCapabilitiesGrid() {
       )
     },
     {
-      title: "Theft Detection",
+      title: "Robbery Detection",
       badge: "Local AI",
       desc: "Monitors secure perimeters and flags suspicious behavior if items or property are suddenly removed or stolen from the area.",
       svgBackdrop: (
@@ -212,6 +259,34 @@ export function SecurityCapabilitiesGrid() {
           <rect x="30" y="30" width="40" height="40" />
           <path d="M15 15 L30 30 M85 15 L70 30 M15 85 L30 70 M85 85 L70 70" />
           <circle cx="50" cy="50" r="4" fill="var(--green)" />
+        </svg>
+      )
+    },
+    {
+      title: "Instant Responder Alerts",
+      badge: "Telegram + SMS",
+      desc: "The moment an incident is confirmed, the nearest barangay tanod and PNP officer get a plain-text alert — crime type, confidence, and which camera — over Telegram or SMS. No extra app to install.",
+      svgBackdrop: (
+        <svg viewBox="0 0 100 100" fill="none" stroke="var(--green)" strokeWidth="0.5" opacity="0.04" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+          <path d="M15 30 L85 15 L60 85 L45 55 L15 30Z" strokeWidth="1" />
+          <path d="M45 55 L85 15" strokeWidth="0.75" strokeDasharray="3 2" />
+          <circle cx="15" cy="30" r="3" fill="var(--green)" />
+          <circle cx="60" cy="85" r="3" fill="var(--green)" />
+        </svg>
+      )
+    },
+    {
+      title: "Jurisdiction-Scoped Control",
+      badge: "Per-Camera",
+      desc: "Barangay admins choose exactly which detectors run on which of their own cameras — violence on one pole, weapons on another — without ever touching another barangay's setup.",
+      svgBackdrop: (
+        <svg viewBox="0 0 100 100" fill="none" stroke="var(--green)" strokeWidth="0.5" opacity="0.04" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+          <rect x="12" y="20" width="30" height="20" rx="2" strokeWidth="1" />
+          <rect x="58" y="20" width="30" height="20" rx="2" strokeWidth="1" />
+          <rect x="12" y="60" width="30" height="20" rx="2" strokeWidth="1" />
+          <rect x="58" y="60" width="30" height="20" rx="2" strokeWidth="1" />
+          <circle cx="27" cy="30" r="3" fill="var(--green)" />
+          <circle cx="73" cy="70" r="3" fill="var(--green)" />
         </svg>
       )
     },
@@ -345,7 +420,7 @@ export function BlueprintSpecs({ configurations }: { configurations: SplitConfig
           <h2 style={{ fontFamily: 'var(--fh)', fontWeight: 900, fontSize: 'clamp(44px, 5.5vw, 76px)', lineHeight: 0.95, textTransform: 'uppercase', letterSpacing: '-1.5px', color: '#fff', marginBottom: 24, animation: 'textGlitch 12s infinite step-end' }}>How the Hardware Components<br/>Work Together.</h2>
         </div>
         {configurations.map((split, i) => (
-          <div key={i} style={{ ...s.techSplit, ...(split.reverse ? { direction: 'rtl' } : {}), marginBottom: i === configurations.length - 1 ? 0 : 120 }}>
+          <div key={i} className="tech-split" style={{ ...s.techSplit, ...(split.reverse ? { direction: 'rtl' } : {}), marginBottom: i === configurations.length - 1 ? 0 : 120 }}>
             <div className="reveal" style={split.reverse ? { direction: 'ltr' } : {}}>
               <TechnicalSpecVisual src={split.img} badge={split.badge} label={`Hardware Part Layout — ${split.badge.toUpperCase()}`}/>
             </div>
@@ -386,13 +461,6 @@ export function DeveloperProfiles() {
       desc: "Managed the overall schedule for the thesis, kept track of all deadlines, and helped out with every single part of the project whenever the team needed support.",
     },
     {
-      name: "Florenz Elarde",
-      title: "Hardware Maker",
-      role: "Hardware Design & Wiring",
-      img: "/florenz.jpg",
-      desc: "Built the physical smartpole structure and wired the electrical system. Set up the solar panels, solar charger, battery bank, warning siren, and the panic button.",
-    },
-    {
       name: "Reiss Mea Peres",
       title: "Documentation & Assembly",
       role: "Technical Writing & Hardware Support",
@@ -419,11 +487,13 @@ export function DeveloperProfiles() {
             <div key={idx} className="reveal" style={{ padding: '40px 32px', background: 'var(--surface)', border: '1px solid var(--border)', position: 'relative', overflow: 'hidden' }}>
               
               {/* Profile Image Box Container */}
-              <div style={{ width: '100%', height: '240px', background: '#020502', border: '1px solid var(--border)', marginBottom: '24px', overflow: 'hidden' }}>
-                <img 
-                  src={dev.img} 
-                  alt={dev.name} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.75 }} 
+              <div style={{ width: '100%', height: '240px', background: '#020502', border: '1px solid var(--border)', marginBottom: '24px', overflow: 'hidden', position: 'relative' }}>
+                <Image
+                  src={dev.img}
+                  alt={dev.name}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 300px"
+                  style={{ objectFit: 'cover', opacity: 0.75 }}
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                   }}
@@ -463,7 +533,7 @@ export function ContactUs() {
   return (
     <section style={{ padding: '140px 0', borderTop: '1px solid var(--border)', position: 'relative', zIndex: 10 }} id="contact">
       <div style={s.secInner}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: 64, alignItems: 'start' }}>
+        <div style={s.contactGrid}>
           
           <div className="reveal">
             <div style={{ fontFamily: 'var(--fm)', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18, fontWeight: 700 }}>

@@ -4,7 +4,6 @@ import { NavLinkProps } from '../types';
 
 export const GlobalStyle = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300&family=Barlow+Condensed:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap');
     :root {
       --bg:           #020502;
       --surface:      #060d06;
@@ -18,14 +17,89 @@ export const GlobalStyle = () => (
       --accent:       #a8d400;
       --text:         #f0f5f0;
       --muted:        #829a82;
-      --fh:           'Barlow Condensed', sans-serif;
-      --fb:           'Barlow', sans-serif;
-      --fm:           'JetBrains Mono', monospace;
+      --fh:           var(--font-barlow-condensed), sans-serif;
+      --fb:           var(--font-barlow), sans-serif;
+      --fm:           var(--font-jetbrains-mono), monospace;
+
+      /* Layout tokens read by app/styles.ts (s.nav, s.secInner, s.pillarsGrid,
+         etc.) so the same object-style constants can respond to viewport size
+         without duplicating every layout rule as inline JS breakpoints. */
+      --gutter:      80px;
+      --nav-pad:     64px;
+      --pillars-cols: repeat(3, 1fr);
+      --tech-cols:   1.1fr 0.9fr;
+      --tech-gap:    96px;
+      --metrics-cols: repeat(4, 1fr);
+      --contact-cols: repeat(auto-fit, minmax(450px, 1fr));
+      --sandbox-cols: 1fr 380px;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; background: var(--bg); }
     body { background: var(--bg); color: var(--text); font-family: var(--fb); overflow-x: hidden; cursor: none; -webkit-font-smoothing: antialiased; }
     a, button { cursor: none; }
+
+    /* Touch devices have no hover/pointer precision for the custom cursor to
+       track, so it never repaints and sits frozen at 0,0 -- restore the
+       native cursor instead of a stray HUD dot in the corner. */
+    @media (hover: none), (pointer: coarse) {
+      body, a, button { cursor: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+
+    /* ── Responsive layout tokens ─────────────────────────────────────────
+       Everything below only re-assigns the variables above; the object
+       styles in styles.ts and their var(--x) values do the rest. */
+    @media (max-width: 1080px) {
+      :root { --gutter: 48px; --nav-pad: 28px; --tech-gap: 56px; }
+    }
+    @media (max-width: 900px) {
+      :root {
+        --pillars-cols: repeat(2, 1fr);
+        --tech-cols: 1fr;
+        --metrics-cols: repeat(2, 1fr);
+        --contact-cols: 1fr;
+        --sandbox-cols: 1fr;
+      }
+      .tech-split { direction: ltr !important; }
+    }
+    @media (max-width: 640px) {
+      :root {
+        --gutter: 20px;
+        --nav-pad: 16px;
+        --pillars-cols: 1fr;
+        --metrics-cols: 1fr;
+      }
+      .metric-cell { border-right: none !important; border-bottom: 1px solid var(--border); }
+      .metric-cell:last-child { border-bottom: none; }
+    }
+
+    /* ── Mobile nav ────────────────────────────────────────────────────── */
+    .nav-toggle { display: none; width: 40px; height: 40px; align-items: center; justify-content: center; background: none; border: 1px solid var(--border); color: var(--green); flex-shrink: 0; }
+    @media (max-width: 900px) {
+      .nav-toggle { display: flex; }
+      .nav-deploy-btn { display: none; }
+      /* align-items and gap are also set inline via s.navLinks (needed for
+         the desktop row layout), which always wins over a plain class rule
+         -- !important is required here to actually reflow it as a column. */
+      .nav-links {
+        position: absolute; top: 100%; left: 0; right: 0;
+        flex-direction: column; align-items: stretch !important; gap: 0 !important;
+        background: rgba(2, 5, 2, 0.98); border-bottom: 1px solid var(--border);
+        max-height: 0; overflow: hidden; padding: 0 24px;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+      }
+      .nav-links.open { max-height: 480px; padding: 12px 24px 28px; }
+      .nav-links li { width: 100%; }
+      .nav-links li a { display: block; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    }
     @keyframes gridScroll { from { transform: translateY(0); } to { transform: translateY(40px); } }
     @keyframes edgePulse { 0%, 100% { border-color: var(--border); box-shadow: 0 0 0px rgba(118,185,0,0); } 50% { border-color: var(--green); box-shadow: 0 0 15px rgba(118,185,0,0.15); } }
     @keyframes textGlitch { 0%, 100% { transform: none; opacity: 1; } 92% { transform: skewX(-2deg) scaleY(0.98); opacity: 0.95; } 95% { transform: skewX(3deg) scaleY(1.02); opacity: 0.9; } 98% { transform: skewX(-1deg); opacity: 0.98; } }
@@ -63,12 +137,34 @@ export function FullPremiumLogo({ size = 44 }: { size?: number }) {
   );
 }
 
+// Reads (hover: hover) and pointer: fine as external browser state via
+// useSyncExternalStore rather than setState-in-an-effect, so the server
+// snapshot (assume desktop) and the real client snapshot can differ without
+// a hydration-mismatch warning, and the render/subscribe split is the one
+// react-hooks actually wants for syncing from an external system.
+function useHoverCapable() {
+  return React.useSyncExternalStore(
+    (onChange) => {
+      const mql = window.matchMedia('(hover: hover) and (pointer: fine)');
+      mql.addEventListener('change', onChange);
+      return () => mql.removeEventListener('change', onChange);
+    },
+    () => window.matchMedia('(hover: hover) and (pointer: fine)').matches,
+    () => true // server snapshot: render the desktop cursor markup during SSR
+  );
+}
+
 export function CustomCursor() {
   const dotRef  = React.useRef<HTMLDivElement>(null);
   const ringRef = React.useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = React.useState(false);
+  // Touch devices never fire mousemove, so the ring/dot would otherwise sit
+  // frozen at their initial 0,0 position -- a stray HUD artifact in the
+  // corner of the screen on every phone visit. Skip mounting them entirely.
+  const enabled = useHoverCapable();
 
   React.useEffect(() => {
+    if (!enabled) return;
     let mx = 0, my = 0, rx = 0, ry = 0, afId: number;
     const onMove = (e: MouseEvent) => { mx = e.clientX; my = e.clientY; };
     const updatePosition = () => {
@@ -92,7 +188,9 @@ export function CustomCursor() {
         el.removeEventListener('mouseenter', handleHoverStart); el.removeEventListener('mouseleave', handleHoverEnd);
       });
     };
-  }, []);
+  }, [enabled]);
+
+  if (!enabled) return null;
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, zIndex: 99999, pointerEvents: 'none', mixBlendMode: 'difference' }}>
@@ -102,10 +200,10 @@ export function CustomCursor() {
   );
 }
 
-function NavLink({ href, children }: NavLinkProps) {
+function NavLink({ href, children, onNavigate }: NavLinkProps & { onNavigate?: () => void }) {
   return (
     <li>
-      <a href={href} style={{ fontSize: 14, fontWeight: 700, color: 'var(--muted)', textDecoration: 'none', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--fm)', transition: 'color 0.2s' }}
+      <a href={href} onClick={onNavigate} style={{ fontSize: 14, fontWeight: 700, color: 'var(--muted)', textDecoration: 'none', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'var(--fm)', transition: 'color 0.2s' }}
          onMouseEnter={e => (e.currentTarget.style.color = 'var(--green)')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}>
         {children}
       </a>
@@ -114,25 +212,43 @@ function NavLink({ href, children }: NavLinkProps) {
 }
 
 export function Navbar({ scrolled }: { scrolled: boolean }) {
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const closeMenu = () => setMobileOpen(false);
+
   return (
     <nav style={{ ...s.nav, background: scrolled ? 'rgba(2, 5, 2, 0.95)' : 'rgba(2, 5, 2, 0.75)', borderBottom: `1px solid ${scrolled ? 'var(--border-glow)' : 'var(--border)'}` }}>
-      <a href="#" style={s.navLogo}>
+      <a href="#" style={s.navLogo} onClick={closeMenu}>
         <FullPremiumLogo size={46}/>
         <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
           <span style={s.navBrand}>EcoVision</span>
           <span style={s.navSub}>Smartpole Architecture</span>
         </div>
       </a>
-      <ul style={s.navLinks}>
-        <NavLink href="#specs">Specifications</NavLink>
-        <NavLink href="#action-matrix">Vision Stream</NavLink>
-        <NavLink href="#pillars">Core Pillars</NavLink>
-        <NavLink href="#vision">Blueprint Specs</NavLink>
-        <NavLink href="#playground">Inference Sandbox</NavLink>
+      <ul className={`nav-links${mobileOpen ? ' open' : ''}`} style={s.navLinks}>
+        <NavLink href="#specs" onNavigate={closeMenu}>Specifications</NavLink>
+        <NavLink href="#action-matrix" onNavigate={closeMenu}>Vision Stream</NavLink>
+        <NavLink href="#performance" onNavigate={closeMenu}>Model Performance</NavLink>
+        <NavLink href="#pillars" onNavigate={closeMenu}>Core Pillars</NavLink>
+        <NavLink href="#vision" onNavigate={closeMenu}>Blueprint Specs</NavLink>
+        <NavLink href="#playground" onNavigate={closeMenu}>Inference Sandbox</NavLink>
       </ul>
-      <button style={s.navBtn} onClick={() => document.getElementById('pillars')?.scrollIntoView({ behavior: 'smooth' })}>
-        Deploy Explorer
-      </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <button className="nav-deploy-btn" style={s.navBtn} onClick={() => document.getElementById('pillars')?.scrollIntoView({ behavior: 'smooth' })}>
+          Deploy Explorer
+        </button>
+        <button
+          className="nav-toggle"
+          aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={mobileOpen}
+          onClick={() => setMobileOpen(open => !open)}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} style={{ width: 20, height: 20 }}>
+            {mobileOpen
+              ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18" />
+              : <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M4 12h16M4 17h16" />}
+          </svg>
+        </button>
+      </div>
     </nav>
   );
 }

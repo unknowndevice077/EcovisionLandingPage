@@ -143,7 +143,7 @@ export function InferenceSandbox() {
           </div>
         )}
 
-        <div className="reveal d1" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 2, background: 'var(--border)', border: '1px solid var(--border)', marginTop: 48, boxShadow: '0 25px 60px rgba(0,0,0,0.6)' }}>
+        <div className="reveal d1" style={s.sandboxGrid}>
           
           <div style={{ background: '#020502', minHeight: 580, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: demoImage ? '32px' : '0' }}>
             {!demoImage ? (

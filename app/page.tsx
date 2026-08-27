@@ -3,13 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { s, ASSETS, useReveal, useCounter } from "./styles";
 import { GlobalStyle, CustomCursor, Navbar, Manifesto, Footer } from "./components/layout-frame";
-import { 
-  Hero, 
-  Ticker, 
-  Metrics, 
-  StreamShowcase, 
-  SecurityCapabilitiesGrid, 
-  Pillars, 
+import {
+  Hero,
+  Ticker,
+  Metrics,
+  StreamShowcase,
+  ModelPerformance,
+  SecurityCapabilitiesGrid,
+  Pillars,
   BlueprintSpecs,
   DeveloperProfiles, // Added missing import
   ContactUs          // Added missing import
@@ -40,8 +41,8 @@ export default function EcoVisionLanding() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
         </svg>
       ),
-      body: 'Our custom AI models scan video feeds directly on the hardware pole. The system spots threats instantly and deletes raw video clips right away to secure civic privacy.',
-      tags: ['YOLOv11 + X3D-XS AI', 'Local Compute', 'Fast Frame Loops', 'Privacy Protection']
+      body: 'A YOLOv11 detector and an X3D-XS action classifier work together on the pole itself, catching both objects (weapons) and behavior (violence, robbery, vandalism) — validated at 95% accuracy on footage the models never trained on. Raw video is cleared immediately after judging it.',
+      tags: ['YOLOv11 + X3D-XS AI', '95% Validated Accuracy', 'Local Compute', 'Privacy Protection']
     },
     {
       num: '02', label: '24/7 Solar Power Bank',
@@ -91,6 +92,13 @@ export default function EcoVisionLanding() {
   const [metricPower, refPower] = useCounter(15);
   const [metricRange, refRange] = useCounter(180);
 
+  // Held-out evaluation results — passed as x10 so the count-up animation
+  // can land on one decimal place (e.g. 974 -> "97.4"). See ModelPerformance.
+  const [metricAccuracy, refAccuracy] = useCounter(950);
+  const [metricRecall, refRecall] = useCounter(974);
+  const [metricFpr, refFpr] = useCounter(74);
+  const [metricClips, refClips] = useCounter(758);
+
   useReveal();
 
   return (
@@ -109,6 +117,10 @@ export default function EcoVisionLanding() {
       />
       
       <StreamShowcase />
+      <ModelPerformance
+        accuracyRef={refAccuracy} recallRef={refRecall} fprRef={refFpr} clipsRef={refClips}
+        metricAccuracy={metricAccuracy} metricRecall={metricRecall} metricFpr={metricFpr} metricClips={metricClips}
+      />
       <SecurityCapabilitiesGrid />
       <Pillars segments={PILLARS_DATA} />
       <BlueprintSpecs configurations={BLUEPRINTS_DATA} />

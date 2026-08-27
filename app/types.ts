@@ -39,6 +39,17 @@ export interface MetricSpecProps {
   metricRange: number;
 }
 
+export interface ModelPerformanceProps {
+  accuracyRef: React.RefObject<HTMLDivElement | null>;
+  recallRef: React.RefObject<HTMLDivElement | null>;
+  fprRef: React.RefObject<HTMLDivElement | null>;
+  clipsRef: React.RefObject<HTMLDivElement | null>;
+  metricAccuracy: number;
+  metricRecall: number;
+  metricFpr: number;
+  metricClips: number;
+}
+
 export interface PillarItemProps {
   num: string;
   label: string;
