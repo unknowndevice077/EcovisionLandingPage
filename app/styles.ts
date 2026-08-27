@@ -17,15 +17,21 @@ export const ASSETS = {
   // "Live AI Video Feeds" showcase grid (StreamShowcase). Every entry below
   // is the real trained model actually running -- not stock or GTA footage.
   //
-  // VIOLENCE and ROBBERY: the real pose+X3D-XS pipeline (maincode/x3d_violence_detector.py,
-  // same weights config.json deploys) run against public UCF-Crime benchmark
-  // clips it had never seen, via maincode/visualize_all_detections.py. Both
-  // are genuine model output, trimmed to their most active window.
+  // VIOLENCE and ROBBERY: real model output against public UCF-Crime
+  // benchmark clips they'd never seen, trimmed to a run the model itself
+  // confirmed. Deliberately draws NO per-person box: X3D's per-track mode
+  // can pin "violent" on a bystander standing next to the actual aggressor,
+  // which reads as the system getting it wrong even when the scene verdict
+  // is correct. SceneViolenceDetector (config.json's deployed mode: "scene")
+  // classifies the WHOLE FRAME instead -- one verdict, no attribution to
+  // get wrong -- rendered exactly like main.py's own evidence-snapshot
+  // banner (full-frame border + "ASSAULT XX%"), not a debug overlay.
   VIOLENCE_FEED:  "/AssaultDetected.mp4",
-  // Robbery note: this window shows a real confirmed struggle near a vehicle,
-  // tracked live with the model-input inset and confidence bar -- the
-  // RobberyTracker pair-line itself (a separate signal requiring a sustained
-  // armed+proximity read) wasn't confirmed visible in this particular window.
+  // Robbery has no whole-frame equivalent (RobberyTracker is inherently a
+  // pair relationship, armed-or-violent + sustained proximity between two
+  // specific tracks), so pose/weapon/X3D still run to feed it -- they are
+  // just never drawn. Only the same clean banner appears, and only once
+  // RobberyTracker itself confirms a pair, not a per-person guess.
   ROBBERY_FEED:   "/RobberyDetection.mp4",
   // WEAPON and VANDALISM: single-frame YOLO detectors (weapons_v2.pt,
   // vandalism_marks_v2.pt), run directly against held-out validation/test
