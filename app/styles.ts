@@ -14,11 +14,16 @@ export const ASSETS = {
   // Hero section — big autoplaying background loop behind the headline
   HERO_VIDEO: "/AssaultDetected.mp4",
 
-  // "Live AI Video Feeds" showcase grid (StreamShowcase)
-  VIOLENCE_FEED:  "/AssaultDetected.mp4",
-  WEAPON_FEED:    "/WeaponDetection.mp4",
-  ROBBERY_FEED:   "/RobberyDetection.mp4",
-  VANDALISM_FEED: "/VandalismDetection.mp4",
+  // "Live AI Video Feeds" showcase grid (StreamShowcase). Every entry below
+  // is real footage from the actual system (recordings/ + static/screenshots/,
+  // auto-saved the moment a detector fired) -- not stock or benchmark clips.
+  VIOLENCE_FEED:  "/AssaultDetected.mp4",   // AUTO_ASSAULT recording, trimmed to the confirmed-alert window
+  WEAPON_FEED:    "",  // no real weapon incident has been recorded yet -- see WeaponDetection note below
+  ROBBERY_FEED:   "/RobberyDetection.mp4",  // AUTO_ROBBERY recording, trimmed to the confirmed-alert window
+  VANDALISM_FEED: "/VandalismDetection.jpg", // the video's visible per-track boxes only show ASSAULT (other
+                                              // bystanders independently tracked) -- the vandalism call itself
+                                              // is scene-level and only renders on the evidence snapshot, so
+                                              // that snapshot (VANDALISM 88.8%) is used here instead, as an image.
 
   // Hardware breakdown photos (BlueprintSpecs, "How the Hardware Works" section)
   TECH_IMG_CAMERA: "",  // e.g. "/camera-hardware.jpg"

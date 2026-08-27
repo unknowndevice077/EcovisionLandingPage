@@ -150,7 +150,10 @@ export function StreamShowcase() {
         </div>
 
         <div style={{ position: 'relative', overflow: 'hidden' }} className="reveal d1">
-          <MediaShowcase src={ASSETS.WEAPON_FEED} label="Weapon / Gun Detection Feed" sublabel="Live Camera Stream • Dangerous Object Tracking Array" minHeight={380}/>
+          {/* No real weapon incident has been recorded yet -- rather than
+              show stand-in footage, this stays the built-in placeholder
+              until there's an actual confirmed detection to show. */}
+          <MediaShowcase src={ASSETS.WEAPON_FEED} label="Weapon / Gun Detection Feed" sublabel="Awaiting a confirmed weapon detection recording" minHeight={380}/>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px', zIndex: 20, background: 'linear-gradient(to top, var(--bg) 0%, transparent)' }}>
             <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: '#ffcc00', marginBottom: 6, fontWeight: 700 }}>CAM_02 // SEARCH FEED</div>
             <div style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', color: '#fff' }}>Guns &amp; Weapons Detection Feed</div>
@@ -166,9 +169,13 @@ export function StreamShowcase() {
         </div>
 
         <div style={{ position: 'relative', overflow: 'hidden' }} className="reveal d1">
-          <MediaShowcase src={ASSETS.VANDALISM_FEED} label="Vandalism Detection Feed" sublabel="Live Camera Stream • Surface Damage and Graffiti Monitor" minHeight={380}/>
+          {/* Confirmed-detection snapshot, not a video loop -- the vandalism
+              call is scene-level and only renders cleanly on the evidence
+              snapshot (see ASSETS.VANDALISM_FEED). type="image" tells
+              MediaShowcase to render an <Image>, not a <video>. */}
+          <MediaShowcase src={ASSETS.VANDALISM_FEED} type="image" label="Vandalism Detection Feed" sublabel="Evidence Snapshot • Surface Damage and Graffiti Monitor" minHeight={380}/>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px', zIndex: 20, background: 'linear-gradient(to top, var(--bg) 0%, transparent)' }}>
-            <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--green)', marginBottom: 6, fontWeight: 700 }}>CAM_04 // PUBLIC SPACE AUDIT</div>
+            <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--green)', marginBottom: 6, fontWeight: 700 }}>CAM_04 // CONFIRMED DETECTION</div>
             <div style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', color: '#fff' }}>Vandalism &amp; Property Damage Feed</div>
           </div>
         </div>
