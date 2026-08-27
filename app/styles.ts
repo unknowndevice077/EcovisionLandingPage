@@ -15,15 +15,24 @@ export const ASSETS = {
   HERO_VIDEO: "/AssaultDetected.mp4",
 
   // "Live AI Video Feeds" showcase grid (StreamShowcase). Every entry below
-  // is real footage from the actual system (recordings/ + static/screenshots/,
-  // auto-saved the moment a detector fired) -- not stock or benchmark clips.
-  VIOLENCE_FEED:  "/AssaultDetected.mp4",   // AUTO_ASSAULT recording, trimmed to the confirmed-alert window
-  WEAPON_FEED:    "",  // no real weapon incident has been recorded yet -- see WeaponDetection note below
-  ROBBERY_FEED:   "/RobberyDetection.mp4",  // AUTO_ROBBERY recording, trimmed to the confirmed-alert window
-  VANDALISM_FEED: "/VandalismDetection.jpg", // the video's visible per-track boxes only show ASSAULT (other
-                                              // bystanders independently tracked) -- the vandalism call itself
-                                              // is scene-level and only renders on the evidence snapshot, so
-                                              // that snapshot (VANDALISM 88.8%) is used here instead, as an image.
+  // is the real trained model actually running -- not stock or GTA footage.
+  //
+  // VIOLENCE and ROBBERY: the real pose+X3D-XS pipeline (maincode/x3d_violence_detector.py,
+  // same weights config.json deploys) run against public UCF-Crime benchmark
+  // clips it had never seen, via maincode/visualize_all_detections.py. Both
+  // are genuine model output, trimmed to their most active window.
+  VIOLENCE_FEED:  "/AssaultDetected.mp4",
+  // Robbery note: this window shows a real confirmed struggle near a vehicle,
+  // tracked live with the model-input inset and confidence bar -- the
+  // RobberyTracker pair-line itself (a separate signal requiring a sustained
+  // armed+proximity read) wasn't confirmed visible in this particular window.
+  ROBBERY_FEED:   "/RobberyDetection.mp4",
+  // WEAPON and VANDALISM: single-frame YOLO detectors (weapons_v2.pt,
+  // vandalism_marks_v2.pt), run directly against held-out validation/test
+  // images -- genuine data the training run never touched, per the exact
+  // per-class thresholds main.py enforces. Real boxes, real confidence.
+  WEAPON_FEED:    "/WeaponDetection.jpg",
+  VANDALISM_FEED: "/VandalismDetection.jpg",
 
   // Hardware breakdown photos (BlueprintSpecs, "How the Hardware Works" section)
   TECH_IMG_CAMERA: "",  // e.g. "/camera-hardware.jpg"

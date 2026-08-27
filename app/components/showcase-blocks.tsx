@@ -150,12 +150,13 @@ export function StreamShowcase() {
         </div>
 
         <div style={{ position: 'relative', overflow: 'hidden' }} className="reveal d1">
-          {/* No real weapon incident has been recorded yet -- rather than
-              show stand-in footage, this stays the built-in placeholder
-              until there's an actual confirmed detection to show. */}
-          <MediaShowcase src={ASSETS.WEAPON_FEED} label="Weapon / Gun Detection Feed" sublabel="Awaiting a confirmed weapon detection recording" minHeight={380}/>
+          {/* No real weapon INCIDENT has been auto-recorded yet, so rather
+              than fake one this runs the actual deployed weapons_v2.pt
+              against a held-out test image (never in training) and shows
+              its real output -- genuine boxes, genuine confidence. */}
+          <MediaShowcase src={ASSETS.WEAPON_FEED} type="image" label="Weapon / Gun Detection Feed" sublabel="Model Test • Held-Out Image, Never Trained On" minHeight={380}/>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px', zIndex: 20, background: 'linear-gradient(to top, var(--bg) 0%, transparent)' }}>
-            <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: '#ffcc00', marginBottom: 6, fontWeight: 700 }}>CAM_02 // SEARCH FEED</div>
+            <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: '#ffcc00', marginBottom: 6, fontWeight: 700 }}>CAM_02 // MODEL TEST</div>
             <div style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', color: '#fff' }}>Guns &amp; Weapons Detection Feed</div>
           </div>
         </div>
@@ -169,13 +170,12 @@ export function StreamShowcase() {
         </div>
 
         <div style={{ position: 'relative', overflow: 'hidden' }} className="reveal d1">
-          {/* Confirmed-detection snapshot, not a video loop -- the vandalism
-              call is scene-level and only renders cleanly on the evidence
-              snapshot (see ASSETS.VANDALISM_FEED). type="image" tells
-              MediaShowcase to render an <Image>, not a <video>. */}
-          <MediaShowcase src={ASSETS.VANDALISM_FEED} type="image" label="Vandalism Detection Feed" sublabel="Evidence Snapshot • Surface Damage and Graffiti Monitor" minHeight={380}/>
+          {/* Same treatment as weapons: the actual deployed vandalism_marks_v2.pt
+              run against a held-out test image it never trained on. type="image"
+              tells MediaShowcase to render an <Image>, not a <video>. */}
+          <MediaShowcase src={ASSETS.VANDALISM_FEED} type="image" label="Vandalism Detection Feed" sublabel="Model Test • Held-Out Image, Never Trained On" minHeight={380}/>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px', zIndex: 20, background: 'linear-gradient(to top, var(--bg) 0%, transparent)' }}>
-            <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--green)', marginBottom: 6, fontWeight: 700 }}>CAM_04 // CONFIRMED DETECTION</div>
+            <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--green)', marginBottom: 6, fontWeight: 700 }}>CAM_04 // MODEL TEST</div>
             <div style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', color: '#fff' }}>Vandalism &amp; Property Damage Feed</div>
           </div>
         </div>
