@@ -1,13 +1,5 @@
 import React from "react";
 
-export interface MediaShowcaseProps {
-  label: string;
-  sublabel: string;
-  minHeight?: number;
-  src: string;
-  type?: 'video' | 'image';
-}
-
 export interface TechnicalSpecVisualProps {
   label: string;
   badge: string;

@@ -226,7 +226,6 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
       </a>
       <ul className={`nav-links${mobileOpen ? ' open' : ''}`} style={s.navLinks}>
         <NavLink href="#specs" onNavigate={closeMenu}>Specifications</NavLink>
-        <NavLink href="#action-matrix" onNavigate={closeMenu}>Vision Stream</NavLink>
         <NavLink href="#performance" onNavigate={closeMenu}>Model Performance</NavLink>
         <NavLink href="#pillars" onNavigate={closeMenu}>Core Pillars</NavLink>
         <NavLink href="#vision" onNavigate={closeMenu}>Blueprint Specs</NavLink>
@@ -285,7 +284,7 @@ export function Footer() {
           </div>
         </a>
         <div style={s.footLinks}>
-          {[['#specs', 'Specs Matrix'], ['#action-matrix', 'Inference Feed'], ['#pillars', 'System Pillars'], ['#playground', 'AI Sandbox']].map(([url, label]) => (
+          {[['#specs', 'Specs Matrix'], ['#pillars', 'System Pillars'], ['#playground', 'AI Sandbox']].map(([url, label]) => (
             <a key={url} href={url} style={{ fontSize: 13, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', fontFamily: 'var(--fm)' }}>
               {label}
             </a>

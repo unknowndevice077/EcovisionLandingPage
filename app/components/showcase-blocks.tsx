@@ -1,37 +1,16 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
-import { s, ASSETS, useInViewVideo } from '../styles';
-import { MediaShowcaseProps, TechnicalSpecVisualProps, MetricSpecProps, ModelPerformanceProps, PillarItemProps, SplitConfigProps } from '../types';
+import dynamic from 'next/dynamic';
+import { TEAM } from '../data/team';
 
-export function MediaShowcase({ label, sublabel, minHeight = 380, src, type = 'video' }: MediaShowcaseProps) {
-  const isPlaceholder = !src;
-  const videoRef = useInViewVideo();
-  return (
-    <div style={{ width: '100%', minHeight, background: 'var(--surface)', border: '1px solid var(--border)', position: 'relative', overflow: 'hidden', animation: 'edgePulse 8s ease-in-out infinite' }}>
-      {!isPlaceholder ? (
-        type === 'video' ? (
-          // Below-the-fold feeds only decode/play once scrolled into view (see
-          // useInViewVideo) instead of every clip autoplaying at once on load.
-          <video ref={videoRef} muted loop playsInline preload="metadata" poster={src.replace(/\.mp4$/i, '.jpg')} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', opacity: 0.75 }}>
-            <source src={src} type="video/mp4"/>
-          </video>
-        ) : (
-          <Image src={src} alt={label} fill sizes="(max-width: 900px) 100vw, 50vw" style={{ objectFit: 'cover', opacity: 0.8 }}/>
-        )
-      ) : (
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(118,185,0,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(118,185,0,.03) 1px, transparent 1px)', backgroundSize: '30px 30px' }}/>
-          <div style={{ width: 64, height: 64, border: '1px solid rgba(118,185,0,.2)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(118,185,0,.02)' }}>
-            <svg viewBox="0 0 24 24" fill="var(--green)" style={{ width: 24, height: 24, marginLeft: type === 'video' ? 2 : 0 }}><path d={type === 'video' ? "M8 5v14l11-7z" : "M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"}/></svg>
-          </div>
-          <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: 2, color: 'rgba(118,185,0,.4)', textTransform: 'uppercase', textAlign: 'center', lineHeight: 1.8 }}>
-            ⚡ {label} SETUP REQUIRED <br/> <span style={{ color: 'var(--muted)' }}>{sublabel}</span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+// three.js is client-only and ~150 KB: load it after the page has painted,
+// never during server rendering.
+const PoleCanvas = dynamic(() => import('./pole3d/PoleCanvas'), { ssr: false });
+const PoleExplodedView = dynamic(() => import('./pole3d/PoleExplodedView'), { ssr: false });
+import { s, ASSETS } from '../styles';
+import { TechnicalSpecVisualProps, MetricSpecProps, ModelPerformanceProps, PillarItemProps, SplitConfigProps } from '../types';
 
 export function TechnicalSpecVisual({ label, badge, src }: TechnicalSpecVisualProps) {
   const isPlaceholder = !src;
@@ -59,25 +38,22 @@ export function Hero() {
   return (
     <section style={s.hero} id="hero">
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}>
-        {!ASSETS.HERO_VIDEO ? (
-          <div style={{ width: '100%', height: '100%', background: 'radial-gradient(circle at 80% 40%, #030d03 0%, var(--bg) 75%)', position: 'relative' }}>
-            <div className="matrix-grid"/>
-            <div className="camera-blueprint-layer" />
-            <svg style={{ position: 'absolute', right: '4%', bottom: 0, height: '92vh', width: 'auto', opacity: 0.18, zIndex: 1 }} viewBox="0 0 24 800" fill="none">
-              <line x1="12" y1="800" x2="12" y2="160" stroke="var(--green)" strokeWidth="2.5" strokeDasharray="6 4" />
-              <rect x="5" y="480" width="14" height="140" fill="rgba(118,185,0,0.08)" stroke="var(--green)" strokeWidth="1.5" />
-              <line x1="12" y1="140" x2="48" y2="185" stroke="var(--accent)" strokeWidth="1.5" />
-              <circle cx="48" cy="185" r="3.5" fill="var(--accent)" />
-            </svg>
-          </div>
-        ) : (
-          <video autoPlay muted loop playsInline preload="metadata" poster={ASSETS.HERO_VIDEO.replace(/\.mp4$/i, '.jpg')} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.45 }}>
-            <source src={ASSETS.HERO_VIDEO} type="video/mp4"/>
-          </video>
-        )}
+        {/* No background video: the detection clips were removed as too
+            violent for a public page. The 3D pole carries the hero instead. */}
+        <div style={{ width: '100%', height: '100%', background: 'radial-gradient(circle at 80% 40%, #030d03 0%, var(--bg) 75%)', position: 'relative' }}>
+          <div className="matrix-grid"/>
+          <div className="camera-blueprint-layer" />
+        </div>
       </div>
       <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(0deg, var(--bg) 0%, rgba(2,5,2,0.4) 60%, transparent 100%)' }}/>
       <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(90deg, var(--bg) 0%, rgba(2,5,2,0.7) 50%, transparent 100%)' }}/>
+      {/* The smartpole in 3D, on the right. Hidden on narrow screens, where it
+          would sit behind the headline and cost a phone's battery. */}
+      <PoleCanvas mode="hero" className="hero-pole" />
+      <style>{`
+        .hero-pole { position: absolute !important; top: 0; right: 0; bottom: 0; width: min(48vw, 760px); z-index: 2; pointer-events: none; }
+        @media (max-width: 900px) { .hero-pole { display: none; } }
+      `}</style>
       <div style={s.heroContent}>
         <div style={s.heroBadge}><span style={s.heroBadgeDot}/>EcoVision Smartpole • Local AI Detection Node</div>
         <h1 style={s.heroTitle}>EcoVision<br/><span style={s.heroSpan}>Driven by Edge AI.</span></h1>
@@ -121,67 +97,6 @@ export function Metrics({ latencyRef, objectsRef, powerRef, rangeRef, metricLate
         </div>
       ))}
     </div>
-  );
-}
-
-export function StreamShowcase() {
-  return (
-    <section style={{ padding: '140px 0 0', borderTop: '1px solid var(--border)', position: 'relative', zIndex: 10 }} id="action-matrix">
-      <div style={s.secInner}>
-        <div className="reveal" style={{ marginBottom: 72 }}>
-          <div style={{ fontFamily: 'var(--fm)', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18, fontWeight: 700 }}>
-            <span style={{ display: 'block', width: 24, height: 2, background: 'var(--green)' }}/>
-            Live AI Video Feeds
-          </div>
-          <h2 style={{ fontFamily: 'var(--fh)', fontWeight: 900, fontSize: 'clamp(44px, 5.5vw, 76px)', lineHeight: 0.95, textTransform: 'uppercase', letterSpacing: '-1.5px', color: '#fff', marginBottom: 24, animation: 'textGlitch 12s infinite step-end' }}>
-            Real-Time On-Pole Computer Vision.
-          </h2>
-        </div>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(48%, 1fr))', gap: 24, padding: '0 24px' }}>
-        
-        <div style={{ position: 'relative', overflow: 'hidden' }} className="reveal">
-          <MediaShowcase src={ASSETS.VIOLENCE_FEED} label="Violence / Assault Detection Feed" sublabel="Live Camera Stream • Physical Fight Detection System" minHeight={380}/>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px', zIndex: 20, background: 'linear-gradient(to top, var(--bg) 0%, transparent)' }}>
-            <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: '#ff3b30', marginBottom: 6, fontWeight: 700 }}>CAM_01 // LENS HIGH ALERT</div>
-            <div style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', color: '#fff' }}>Violence &amp; Assault Detection Feed</div>
-          </div>
-        </div>
-
-        <div style={{ position: 'relative', overflow: 'hidden' }} className="reveal d1">
-          {/* No real weapon INCIDENT has been auto-recorded by the live
-              system yet, so rather than fake one this runs the actual
-              deployed weapons_v2.pt frame-by-frame on real video -- genuine
-              boxes, genuine confidence, trimmed to a run it confirmed. */}
-          <MediaShowcase src={ASSETS.WEAPON_FEED} label="Weapon / Gun Detection Feed" sublabel="Model Test • Real Footage, Never Trained On" minHeight={380}/>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px', zIndex: 20, background: 'linear-gradient(to top, var(--bg) 0%, transparent)' }}>
-            <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: '#ffcc00', marginBottom: 6, fontWeight: 700 }}>CAM_02 // MODEL TEST</div>
-            <div style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', color: '#fff' }}>Guns &amp; Weapons Detection Feed</div>
-          </div>
-        </div>
-
-        <div style={{ position: 'relative', overflow: 'hidden' }} className="reveal">
-          <MediaShowcase src={ASSETS.ROBBERY_FEED} label="Robbery Detection Feed" sublabel="Live Camera Stream • Robbery and Asset Theft Monitor" minHeight={380}/>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px', zIndex: 20, background: 'linear-gradient(to top, var(--bg) 0%, transparent)' }}>
-            <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--green)', marginBottom: 6, fontWeight: 700 }}>CAM_03 // PERIMETER SAFE</div>
-            <div style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', color: '#fff' }}>Robbery &amp; Asset Protection Feed</div>
-          </div>
-        </div>
-
-        <div style={{ position: 'relative', overflow: 'hidden' }} className="reveal d1">
-          {/* Same treatment as weapons: the actual deployed
-              vandalism_marks_v2.pt run frame-by-frame on real footage of
-              graffiti actually being applied, at the real 0.50 threshold. */}
-          <MediaShowcase src={ASSETS.VANDALISM_FEED} label="Vandalism Detection Feed" sublabel="Model Test • Real Footage, Never Trained On" minHeight={380}/>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px', zIndex: 20, background: 'linear-gradient(to top, var(--bg) 0%, transparent)' }}>
-            <div style={{ fontFamily: 'var(--fm)', fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--green)', marginBottom: 6, fontWeight: 700 }}>CAM_04 // MODEL TEST</div>
-            <div style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', color: '#fff' }}>Vandalism &amp; Property Damage Feed</div>
-          </div>
-        </div>
-
-      </div>
-    </section>
   );
 }
 
@@ -426,6 +341,7 @@ export function BlueprintSpecs({ configurations }: { configurations: SplitConfig
           <div style={{ fontFamily: 'var(--fm)', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18, fontWeight: 700 }}><span style={{ display: 'block', width: 24, height: 2, background: 'var(--green)' }}/>Hardware Subsystems Breakdown</div>
           <h2 style={{ fontFamily: 'var(--fh)', fontWeight: 900, fontSize: 'clamp(44px, 5.5vw, 76px)', lineHeight: 0.95, textTransform: 'uppercase', letterSpacing: '-1.5px', color: '#fff', marginBottom: 24, animation: 'textGlitch 12s infinite step-end' }}>How the Hardware Components<br/>Work Together.</h2>
         </div>
+        <PoleExplodedView />
         {configurations.map((split, i) => (
           <div key={i} className="tech-split" style={{ ...s.techSplit, ...(split.reverse ? { direction: 'rtl' } : {}), marginBottom: i === configurations.length - 1 ? 0 : 120 }}>
             <div className="reveal" style={split.reverse ? { direction: 'ltr' } : {}}>
@@ -452,31 +368,7 @@ export function BlueprintSpecs({ configurations }: { configurations: SplitConfig
    👥 PROJECT DEVELOPERS PROFILES AREA
    ───────────────────────────────────────────────────────────────────────────── */
 export function DeveloperProfiles() {
-  const developers = [
-    {
-      name: "Fritz Rjhay Dela Cruz",
-      title: "Lead System Architect",
-      role: "AI & Model Training",
-      img: "/fritz.jpg",
-      // Square portrait, face in the upper-middle: keep the head in frame when the wide card crops it.
-      pos: "center 35%",
-      desc: "Created and trained the custom YOLOv11 AI model. Programmed the camera system to spot fights, weapons, theft, and vandalism instantly right on the pole.",
-    },
-    {
-      name: "Angel Venice Torres",
-      title: "Project Manager",
-      role: "Leader",
-      img: "/angel.jpg",
-      desc: "Managed the overall schedule for the thesis, kept track of all deadlines, and helped out with every single part of the project whenever the team needed support.",
-    },
-    {
-      name: "Reiss Mea Peres",
-      title: "Documentation & Assembly",
-      role: "Technical Writing & Hardware Support",
-      img: "/reiss.jpg",
-      desc: "Wrote the technical thesis documents, project reports, and paperwork while helping assemble the physical hardware parts of the pole.",
-    }
-  ];
+  const developers = TEAM;
 
   return (
     <section style={{ padding: '140px 0', borderTop: '1px solid var(--border)', position: 'relative', zIndex: 10 }} id="team">

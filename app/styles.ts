@@ -11,37 +11,10 @@ import React, { useState, useEffect, useRef } from "react";
    graphic instead of a broken/blank video or image tag.
    ───────────────────────────────────────────────────────────────────────────── */
 export const ASSETS = {
-  // Hero section — big autoplaying background loop behind the headline
-  HERO_VIDEO: "/AssaultDetected.mp4",
-
-  // "Live AI Video Feeds" showcase grid (StreamShowcase). Every entry below
-  // is the real trained model actually running -- not stock or GTA footage.
-  //
-  // VIOLENCE and ROBBERY: real model output against public UCF-Crime
-  // benchmark clips they'd never seen, trimmed to a run the model itself
-  // confirmed. Deliberately draws NO per-person box: X3D's per-track mode
-  // can pin "violent" on a bystander standing next to the actual aggressor,
-  // which reads as the system getting it wrong even when the scene verdict
-  // is correct. SceneViolenceDetector (config.json's deployed mode: "scene")
-  // classifies the WHOLE FRAME instead -- one verdict, no attribution to
-  // get wrong -- rendered exactly like main.py's own evidence-snapshot
-  // banner (full-frame border + "ASSAULT XX%"), not a debug overlay.
-  VIOLENCE_FEED:  "/AssaultDetected.mp4",
-  // Robbery has no whole-frame equivalent (RobberyTracker is inherently a
-  // pair relationship, armed-or-violent + sustained proximity between two
-  // specific tracks), so pose/weapon/X3D still run to feed it -- they are
-  // just never drawn. Only the same clean banner appears, and only once
-  // RobberyTracker itself confirms a pair, not a per-person guess.
-  ROBBERY_FEED:   "/RobberyDetection.mp4",
-  // WEAPON and VANDALISM: the real deployed single-frame YOLO detectors
-  // (weapons_v2.pt, vandalism_marks_v2.pt) run frame-by-frame on real video
-  // -- not a single still -- at the exact per-class confidence thresholds
-  // main.py enforces (gun 0.52, knife 0.45, vandalism 0.50). Boxes are the
-  // literal detected object, so drawing them live has none of the
-  // per-person misattribution problem VIOLENCE/ROBBERY avoid above.
-  // Trimmed to a run the detector actually confirmed, not guessed at.
-  WEAPON_FEED:    "/WeaponDetection.mp4",
-  VANDALISM_FEED: "/VandalismDetection.mp4",
+  // Hero: no background video. The detection clips (real assaults and
+  // robberies from UCF-Crime) were removed as too violent for a public page;
+  // the hero shows the 3D smartpole over the grid background instead.
+  HERO_VIDEO: "",
 
   // Hardware breakdown photos (BlueprintSpecs, "How the Hardware Works" section)
   TECH_IMG_CAMERA: "",  // e.g. "/camera-hardware.jpg"
@@ -122,7 +95,9 @@ export function useCounter(target: number, duration = 2000) {
    🎨 HARDWARE INTERFACE LAYOUT STYLES MAP
    ───────────────────────────────────────────────────────────────────────────── */
 export const s = {
-  wrap: { fontFamily: 'var(--fb)', background: 'var(--bg)', color: 'var(--text)', overflowX: 'hidden', position: 'relative' } as const,
+  // overflowX 'clip', not 'hidden': 'hidden' turns this wrapper into a scroll
+  // container, which silently stops position: sticky (the 3D exploded view) working.
+  wrap: { fontFamily: 'var(--fb)', background: 'var(--bg)', color: 'var(--text)', overflowX: 'clip', position: 'relative' } as const,
   nav: { position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 var(--nav-pad)', height: 80, transition: 'background 0.4s, border-color 0.4s, height 0.4s' } as const,
   navLogo: { display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' } as const,
   navBrand: { fontFamily: 'var(--fh)', fontWeight: 900, fontSize: 26, letterSpacing: '0.5px', color: '#fff', textTransform: 'uppercase' } as const,

@@ -30,9 +30,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EcoVision Smartpole — Driven by Edge AI",
+  title: "EcoVision Smartpole — Every street deserves a guardian",
   description:
-    "Solar-powered, on-pole computer vision. EcoVision detects threats locally with custom-trained YOLOv11 and X3D-XS models, keeping neighborhoods safe without sending private video anywhere.",
+    "An energy-efficient, solar-powered smart pole with custom-trained deep learning models for locally processed crime detection. Explore it in 3D.",
 };
 
 export default function RootLayout({
